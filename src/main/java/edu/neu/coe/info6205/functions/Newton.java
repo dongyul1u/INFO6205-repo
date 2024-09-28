@@ -1,6 +1,7 @@
 package edu.neu.coe.info6205.functions;
 
 import java.util.function.DoubleFunction;
+import edu.neu.coe.info6205.functions.Either;
 
 /**
  * This class models the Newton-Raphson Approximation algorithm.
@@ -41,6 +42,7 @@ public class Newton {
         for (; tries > 0; tries--)
             try {
                 final double y = f.apply(x);
+                System.out.println(tries + "try: y="+ y + " x=" + x);
                 if (Math.abs(y) < tolerance) return Either.right(x);
                 x = x - y / dfbydx.apply(x);
             } catch (Exception e) {
@@ -57,7 +59,7 @@ public class Newton {
         // Solve the problem starting with a value of x = 1;
         // requiring a precision of 10^-7;
         // and giving up after 200 tries.
-        Either<String, Double> result = newton.solve(1.0, 200, 1E-7);
+        Either<String, Double> result = newton.solve(1.5, 200, 1E-7);
 
         // Process the result
         result.apply(
