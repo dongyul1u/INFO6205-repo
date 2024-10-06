@@ -62,38 +62,40 @@ public class Timer {
     public <T, U> double repeat(int n, boolean warmup, Supplier<T> supplier, Function<T, U> function, UnaryOperator<T> preFunction, Consumer<U> postFunction) {
         // Warmup phase: Execute the given function n times without timing
         if (warmup) {
-            for (int i = 0; i < n; i++) {
-                T t = supplier.get();
-                if (preFunction != null) {
-                    t = preFunction.apply(t);
-                }
-                U result = function.apply(t);
-                if (postFunction != null) {
-                    postFunction.accept(result);
-                }
-            }
-        }
-
-        //no Resume here, when init the object, resume is called
-        //resume();
-
-        // Timed runs
-        for (int i = 0; i < n; i++) {
-            T t = supplier.get(); // Generate the input value for each run
+            T t = supplier.get();
             if (preFunction != null) {
                 t = preFunction.apply(t);
             }
-            U result = function.apply(t); // Execute the main function
+
+            U result = function.apply(t);
+
             if (postFunction != null) {
                 postFunction.accept(result);
             }
-            lap(); // Record the lap time
+            return 0;
+        } else {
+
+            //no Resume here, when init the object, resume is called
+            //resume();
+
+            // Timed runs
+            for (int i = 0; i < n; i++) {
+                T t = supplier.get(); // Generate the input value for each run
+                if (preFunction != null) {
+                    t = preFunction.apply(t);
+                }
+                U result = function.apply(t); // Execute the main function
+                if (postFunction != null) {
+                    postFunction.accept(result);
+                }
+                lap(); // Record the lap time
+            }
+            pause();
+            double ans = meanLapTime();
+            // Return the average lap time in milliseconds and ensure timer is consistent
+            resume();
+            return ans; // stop() will call pauseAndLap() and return the mean lap time
         }
-        pause();
-        double ans = meanLapTime();
-        // Return the average lap time in milliseconds and ensure timer is consistent
-        resume();
-        return ans; // stop() will call pauseAndLap() and return the mean lap time
     }
 
     /**
