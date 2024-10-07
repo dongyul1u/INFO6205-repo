@@ -14,21 +14,51 @@ public class InsertSortBenchmarkMainFunction {
 
         InsertionSortBasic<Integer> insertSorter = InsertionSortBasic.create();
 
+        System.out.println("For random array");
         for (int n : sizes) {
             // random array
             Supplier<Integer[]> randomArray = () -> generateRandomArray(n, random);
 
-            Consumer<Integer[]> sortFunction = insertSorter::sort;
-
-            Benchmark_Timer<Integer[]> benchmark = new Benchmark_Timer<>(
-                    "Insertion Sort Benchmark",
-                    sortFunction
-            );
-
-            double averageTime = benchmark.runFromSupplier(randomArray, 10);
-            System.out.printf("Average time taken for size %d: %.2f ms%n", n, averageTime);
-            System.out.println();
+            benchMarkCall(insertSorter, n, randomArray);
         }
+        System.out.println("-------------------------");
+        System.out.println("For ordered array");
+        for (int n : sizes) {
+            // random array
+            Supplier<Integer[]> randomArray = () -> generateOrderedArray(n);
+
+            benchMarkCall(insertSorter, n, randomArray);
+        }
+        System.out.println("-------------------------");
+        System.out.println("For partially ordered array");
+        for (int n : sizes) {
+            // random array
+            Supplier<Integer[]> randomArray = () -> generatePartiallyOrderedArray(n);
+
+            benchMarkCall(insertSorter, n, randomArray);
+        }
+        System.out.println("-------------------------");
+        System.out.println("For reverse array");
+        for (int n : sizes) {
+            // random array
+            Supplier<Integer[]> randomArray = () -> generateReverseOrderedArray(n);
+
+            benchMarkCall(insertSorter, n, randomArray);
+        }
+        System.out.println("-------------------------");
+    }
+
+    private static void benchMarkCall(InsertionSortBasic<Integer> insertSorter, int n, Supplier<Integer[]> randomArray) {
+        Consumer<Integer[]> sortFunction = insertSorter::sort;
+
+        Benchmark_Timer<Integer[]> benchmark = new Benchmark_Timer<>(
+                "Insertion Sort Benchmark",
+                sortFunction
+        );
+
+        double averageTime = benchmark.runFromSupplier(randomArray, 10);
+        System.out.printf("Average time taken for size %d: %.2f ms%n", n, averageTime);
+        System.out.println();
     }
 
 
