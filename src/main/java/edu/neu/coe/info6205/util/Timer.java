@@ -62,6 +62,7 @@ public class Timer {
     public <T, U> double repeat(int n, boolean warmup, Supplier<T> supplier, Function<T, U> function, UnaryOperator<T> preFunction, Consumer<U> postFunction) {
         // Warmup phase: Execute the given function n times without timing
         if (warmup) {
+//            System.out.println("warm up");
             T t = supplier.get();
             if (preFunction != null) {
                 t = preFunction.apply(t);
