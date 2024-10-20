@@ -107,6 +107,10 @@ public class PriorityQueue<K> implements Iterable<K> {
         return last;
     }
 
+    public K peek() {
+        return binHeap[first];
+    }
+
     /**
      * Insert an element with the given key into this Priority Queue.
      *

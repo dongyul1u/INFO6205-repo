@@ -1,12 +1,13 @@
-package edu.neu.coe.info6205.sort.elementary;
+package edu.neu.coe.info6205.myclass;
 
+import edu.neu.coe.info6205.sort.elementary.InsertionSortBasic;
 import edu.neu.coe.info6205.util.Benchmark_Timer;
 
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class InsertSortBenchmarkMainFunction {
+public class HW3_InsertSortBenchmarkMainFunction {
 
     public static void main(String[] args) {
         int[]  sizes = {500,1000,2000,4000,8000};
