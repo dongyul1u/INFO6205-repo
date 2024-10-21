@@ -16,9 +16,9 @@ public class HW4_BasicBinaryHeap <K>{
         this.pq = new PriorityQueue<>(true, array, 1, last, comparator, floyd);
     }
 
-    public HW4_BasicBinaryHeap(int capacity, Comparator<K> comparator) {
+    public HW4_BasicBinaryHeap(int capacity, Object[] array,Comparator<K> comparator) {
         // capacity, max heap, increase comparator, floyd false
-        this.pq = new PriorityQueue<>(capacity, true, comparator, false);
+        this.pq = new PriorityQueue<>(true, array,1, 0, comparator, false);
     }
 
     public HW4_BasicBinaryHeap(Comparator<K> comp){
@@ -46,13 +46,13 @@ public class HW4_BasicBinaryHeap <K>{
         return pq.peek();
     }
 
-    public void doMain() {
+    public void doMain(int insertions, int removals) {
         Random random = new Random();
-        int insertions = 16000;
-        int removals = 4000;
+//        int insertions = 16000;
+//        int removals = 4000;
         int maxSize = 4095;
                                                 // this array is used as binHeap in priority queue. So size must greater than max Size
-        Supplier<Integer[]> supplierInit = () -> random.ints(maxSize+1, 0, 1000000).boxed().toArray(Integer[]::new);
+        Supplier<Integer[]> supplierInit = () -> random.ints(maxSize, 0, 1000000).boxed().toArray(Integer[]::new);
         Supplier<Integer[]> supplierOP = () -> random.ints(insertions, 0, 1000000).boxed().toArray(Integer[]::new);
 
         Benchmark_Timer<Integer[]> benchmarkInit = new Benchmark_Timer<>(
@@ -61,7 +61,7 @@ public class HW4_BasicBinaryHeap <K>{
                     Integer[] heapArray = new Integer[maxSize + 10];
                     System.arraycopy(arr, 0, heapArray, 1, maxSize);
                     HW4_BasicBinaryHeap<Integer> bh = new HW4_BasicBinaryHeap<>(heapArray, maxSize, Comparator.comparingInt(a -> a), false);
-                    System.out.println("The highest priority: " + bh.peek());
+//                    System.out.println("The highest priority: " + bh.peek());
                 }
 
         );
@@ -69,8 +69,12 @@ public class HW4_BasicBinaryHeap <K>{
         Benchmark_Timer<Integer[]> benchmarkOP = new Benchmark_Timer<>(
                 "Basic Binary Heap Benchmark",
                 (arr) -> {
+
+                    Integer[] heapArray = new Integer[removals + 1];
+
+                    System.arraycopy(arr, 0, heapArray, 1, removals);
                     // use HW4_BasicBinaryHeap
-                    HW4_BasicBinaryHeap<Integer> binaryHeap = new HW4_BasicBinaryHeap<>(maxSize, Comparator.comparingInt(a -> a));
+                    HW4_BasicBinaryHeap<Integer> binaryHeap = new HW4_BasicBinaryHeap<>(removals, heapArray,Comparator.comparingInt(a -> (int) a));
 
                     // insert 16,000 elements
                     for (int i = 0; i < insertions; i++) {
@@ -91,17 +95,16 @@ public class HW4_BasicBinaryHeap <K>{
                     }
 
                     // output the highest priority
-                    System.out.println("Spilled element with highest priority: " + highestPrioritySpilled);
+//                    System.out.println("Spilled element with highest priority: " + highestPrioritySpilled);
                 }
         );
 
         // run benchmark
         double averageTime = benchmarkInit.runFromSupplier(supplierInit, 10); // run 10 times
-        System.out.println("Average time for Basic Binary Heap Init with 4095 elements: " + averageTime + " ms\n");
-
+        System.out.printf("Average time for Basic Binary Heap Init with %d elements: %.2f ms%n", maxSize, averageTime);
 
         averageTime = benchmarkOP.runFromSupplier(supplierOP, 10); // run 10 times
-        System.out.println("Average time for Basic Binary Heap: " + averageTime + " ms\n" +
-                "-------------------------------------");
+        System.out.printf("Average time for Basic Binary Heap: %.2f ms%n-------------------------------------%n", averageTime);
+//        System.out.println();
     }
 }

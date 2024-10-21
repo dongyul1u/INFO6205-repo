@@ -16,8 +16,13 @@ public class HW4_BinaryHeapFloyd <K> {
         this.pq = new PriorityQueue<>(0, true, comp, true);
     }
 
-    public HW4_BinaryHeapFloyd( Object[] array, int last, Comparator<K> comparator, boolean floyd) {
-        this.pq = new PriorityQueue<>(true, array, 1, last, comparator, floyd);
+    public HW4_BinaryHeapFloyd(Object[] array, int last,Comparator<K> comparator) {
+        // capacity, max heap, increase comparator, floyd false
+        this.pq = new PriorityQueue<>(true, array,1, last, comparator, true);
+    }
+
+    public HW4_BinaryHeapFloyd(int capacity ,Object[] array,  Comparator<K> comparator, boolean floyd) {
+        this.pq = new PriorityQueue<>(true, array, 1, 0, comparator, floyd);
     }
 
     public HW4_BinaryHeapFloyd(int capacity, Comparator<K> comparator) {
@@ -41,10 +46,10 @@ public class HW4_BinaryHeapFloyd <K> {
         return pq.isEmpty();
     }
 
-    public void doMain() {
+    public void doMain(int insertions, int removals) {
         Random random = new Random();
-        int insertions = 16000;
-        int removals = 4000;
+//        int insertions = 16000;
+//        int removals = 4000;
         int maxSize = 4095;
 
         // this array is used as binHeap in priority queue. So size must greater than max Size
@@ -52,12 +57,12 @@ public class HW4_BinaryHeapFloyd <K> {
         Supplier<Integer[]> supplierOP = () -> random.ints(insertions, 0, 1000000).boxed().toArray(Integer[]::new);
 
         Benchmark_Timer<Integer[]> benchmarkInit = new Benchmark_Timer<>(
-                "Basic Binary Heap Benchmark initialization time",
+                "Basic Binary Heap Benchmark with floyd initialization time",
                 (arr) -> {
                     Integer[] heapArray = new Integer[maxSize + 10];
                     System.arraycopy(arr, 0, heapArray, 1, maxSize);
-                    HW4_BasicBinaryHeap<Integer> bh = new HW4_BasicBinaryHeap<>(heapArray, maxSize, Comparator.comparingInt(a -> a), true);
-                    System.out.println("The highest priority: " + bh.peek());
+                    HW4_BinaryHeapFloyd<Integer> bh = new HW4_BinaryHeapFloyd<>(heapArray, maxSize, Comparator.comparingInt(a -> (int) a) );
+//                    System.out.println("The highest priority: " + bh.peek());
                 }
 
         );
@@ -66,7 +71,11 @@ public class HW4_BinaryHeapFloyd <K> {
                 "Binary Heap with Floyd's trick Benchmark",
                 (arr) -> {
                     // use HW4_BasicBinaryHeap
-                    HW4_BinaryHeapFloyd<Integer> binaryHeap = new HW4_BinaryHeapFloyd<>(maxSize, Comparator.comparingInt(a -> a));
+                    // init with a int array
+                    Integer[] heapArray = new Integer[removals + 1];
+                    System.arraycopy(arr, 0, heapArray, 1, removals);
+                    // use HW4_BasicBinaryHeap
+                    HW4_BinaryHeapFloyd<Integer> binaryHeap = new HW4_BinaryHeapFloyd<>(heapArray, removals,Comparator.comparingInt(a -> (int) a));
 
                     // insert 16,000 elements
                     for (int i = 0; i < insertions; i++) {
@@ -87,16 +96,16 @@ public class HW4_BinaryHeapFloyd <K> {
                     }
 
                     // output the highest priority
-                    System.out.println("Spilled element with highest priority: " + highestPrioritySpilled);
+//                    System.out.println("Spilled element with highest priority: " + highestPrioritySpilled);
                 }
         );
 
         // run benchmark
         double averageTime = benchmarkInit.runFromSupplier(supplierInit, 10);
-        System.out.println("Average time for Binary Heap Floyd's trick Init with 4095 elements: " + averageTime + " ms\n");
+        System.out.printf("Average time for Binary Heap Floyd's trick Init with %d elements: %.2f ms%n", maxSize, averageTime);
 
         averageTime = benchmarkOP.runFromSupplier(supplierOP, 10); // run 10 times
-        System.out.println("Average time for Binary Heap with Floyd's trick: " + averageTime + " ms\n" +
-                "-------------------------------------");
+        System.out.printf("Average time for Binary Heap with Floyd's trick: %.2f ms%n-------------------------------------%n", averageTime);
+//        System.out.println();
     }
 }

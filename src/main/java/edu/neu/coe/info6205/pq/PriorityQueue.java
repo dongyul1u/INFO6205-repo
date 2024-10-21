@@ -41,6 +41,18 @@ public class PriorityQueue<K> implements Iterable<K> {
         //noinspection unchecked
         this.binHeap = (K[]) binHeap;
         this.floyd = floyd;
+        // init the heap
+        if (floyd) {
+            for (int i = (last - 1) / 4; i >= first; i--) {
+                doHeapify(i, (a, b) -> !unordered(a, b));
+            }
+        } else {
+
+            for (int i = first; i <= last; i++) {
+                swimUp(i);
+            }
+        }
+
     }
 
     /**
