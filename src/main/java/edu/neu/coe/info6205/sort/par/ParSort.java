@@ -10,13 +10,20 @@ import java.util.concurrent.CompletableFuture;
 class ParSort {
 
     public static int cutoff = 1000;
+    public static int MAX_DEPTH = 4;
 
     public static void sort(int[] array, int from, int to) {
-        if (to - from < cutoff) Arrays.sort(array, from, to);
+        sort(array, from, to, 0); // default set to 0
+    }
+
+    public static void sort(int[] array, int from, int to, int depth) {
+        if (to - from < cutoff || depth >= MAX_DEPTH)
+            Arrays.sort(array, from, to);
         else {
             // FIXME next few lines should be removed from public repo.
-            CompletableFuture<int[]> parsort1 = parsort(array, from, from + (to - from) / 2); // TO IMPLEMENT
-            CompletableFuture<int[]> parsort2 = parsort(array, from + (to - from) / 2, to); // TO IMPLEMENT
+            int mid = from + (to - from) / 2;
+            CompletableFuture<int[]> parsort1 = parsort(array, from, mid, depth+1); // TO IMPLEMENT
+            CompletableFuture<int[]> parsort2 = parsort(array, mid, to, depth+1); // TO IMPLEMENT
             CompletableFuture<int[]> parsort = parsort1.thenCombine(parsort2, (xs1, xs2) -> {
                 int[] result = new int[xs1.length + xs2.length];
                 // TO IMPLEMENT
@@ -42,13 +49,13 @@ class ParSort {
         }
     }
 
-    private static CompletableFuture<int[]> parsort(int[] array, int from, int to) {
+    private static CompletableFuture<int[]> parsort(int[] array, int from, int to, int depth) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     int[] result = new int[to - from];
                     // TO IMPLEMENT
                     System.arraycopy(array, from, result, 0, result.length);
-                    sort(result, 0, to - from);
+                    sort(result, 0, to - from, depth);
                     return result;
                 }
         );

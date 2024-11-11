@@ -16,44 +16,86 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class Main {
 
+//    public static void main(String[] args) {
+//        processArgs(args);
+//        System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
+//        Random random = new Random();
+//        int[] array = new int[2000000];
+//
+//        int[] maxDepthValues = {2, 4, 8, 16};
+//
+//        ArrayList<Long> timeList = new ArrayList<>();
+//        for (int j = 50; j < 100; j++) {
+//            ParSort.cutoff = 10000 * (j + 1);
+//            // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+//            long time;
+//            long startTime = System.currentTimeMillis();
+//            for (int t = 0; t < 10; t++) {
+//                for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+//                ParSort.sort(array, 0, array.length);
+//            }
+//            long endTime = System.currentTimeMillis();
+//            time = (endTime - startTime);
+//            timeList.add(time);
+//
+//
+//            System.out.println("cutoff：" + (ParSort.cutoff) + "\t\t10times Time:" + time + "ms");
+//
+//        }
+//        try {
+//            FileOutputStream fis = new FileOutputStream("./src/result.csv");
+//            OutputStreamWriter isr = new OutputStreamWriter(fis);
+//            BufferedWriter bw = new BufferedWriter(isr);
+//            int j = 0;
+//            for (long i : timeList) {
+//                String content = (double) 10000 * (j + 1) / 2000000 + "," + (double) i / 10 + "\n";
+//                j++;
+//                bw.write(content);
+//                bw.flush();
+//            }
+//            bw.close();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     public static void main(String[] args) {
-        processArgs(args);
         System.out.println("Degree of parallelism: " + ForkJoinPool.getCommonPoolParallelism());
         Random random = new Random();
         int[] array = new int[2000000];
-        ArrayList<Long> timeList = new ArrayList<>();
-        for (int j = 50; j < 100; j++) {
-            ParSort.cutoff = 10000 * (j + 1);
-            // for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
-            long time;
-            long startTime = System.currentTimeMillis();
-            for (int t = 0; t < 10; t++) {
-                for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
-                ParSort.sort(array, 0, array.length);
+
+        int[] maxDepthValues = {2, 3, 4};
+
+        for (int maxDepth : maxDepthValues) {
+            ParSort.MAX_DEPTH = maxDepth;
+            ArrayList<Long> timeList = new ArrayList<>();
+            System.out.println("Testing with MAX_DEPTH = " + maxDepth);
+            for (int j = 5; j <= 59; j+=3) {
+                ParSort.cutoff = 10000 * j;
+                long time;
+                long startTime = System.currentTimeMillis();
+                for (int t = 0; t < 10; t++) {
+                    for (int i = 0; i < array.length; i++) array[i] = random.nextInt(10000000);
+                    ParSort.sort(array, 0, array.length);
+                }
+                long endTime = System.currentTimeMillis();
+                time = (endTime - startTime);
+                timeList.add(time);
+
+                System.out.println("cutoff：" + ParSort.cutoff + "\t10 times Time: " + time + " ms");
             }
-            long endTime = System.currentTimeMillis();
-            time = (endTime - startTime);
-            timeList.add(time);
-
-
-            System.out.println("cutoff：" + (ParSort.cutoff) + "\t\t10times Time:" + time + "ms");
-
-        }
-        try {
-            FileOutputStream fis = new FileOutputStream("./src/result.csv");
-            OutputStreamWriter isr = new OutputStreamWriter(fis);
-            BufferedWriter bw = new BufferedWriter(isr);
-            int j = 0;
-            for (long i : timeList) {
-                String content = (double) 10000 * (j + 1) / 2000000 + "," + (double) i / 10 + "\n";
-                j++;
-                bw.write(content);
-                bw.flush();
+            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream("result_MAX_DEPTH_" + maxDepth + ".csv")))) {
+                int j = 5;
+                for (long i : timeList) {
+                    String content = (double) 10000 * (j) / 2000000 + "," + (double) i / 10 + "\n";
+                    j+=3;
+                    bw.write(content);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            bw.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -75,7 +117,7 @@ public class Main {
         else
             // TODO sort this out
             if (x.equalsIgnoreCase("P")) //noinspection ResultOfMethodCallIgnored
-                ForkJoinPool.getCommonPoolParallelism();
+                System.out.println("Parallelism level: " + ForkJoinPool.getCommonPoolParallelism());
     }
 
     private static void setConfig(String x, int i) {
