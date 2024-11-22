@@ -4,9 +4,10 @@ target/
 
 # Log file
 *.log
-
+info6205.log*
 # BlueJ files
 *.ctxt
+result_MAX_DEPTH_*.csv
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

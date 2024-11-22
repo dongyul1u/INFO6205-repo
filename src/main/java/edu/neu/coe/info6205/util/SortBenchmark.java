@@ -50,7 +50,7 @@ public class SortBenchmark {
 
     void doMain(String[] args) {
         sortStrings(getWordCounts(args));
-        sortIntegers(getWordCounts(args));
+//        sortIntegers(getWordCounts(args));
     }
 
     public SortBenchmark(Config config) {
@@ -299,6 +299,14 @@ public class SortBenchmark {
     static void runStringSortBenchmark(String[] words, int nWords, int nRuns, SortWithHelper<String> sorter, UnaryOperator<String[]> preProcessor, TimeLogger[] timeLoggers) {
         logger.info("****************************** String sort: " + nRuns + " runs of " + nWords + " " + sorter.getDescription() + " ******************************");
         new SorterBenchmark<>(String.class, preProcessor, sorter, words, nRuns, timeLoggers).run(getDescription(nWords, sorter), nWords);
+
+        Helper<String> helper = sorter.getHelper();
+        logger.info("Sorting Metrics:");
+        logger.info("Comparisons: " + helper.getCompares());
+        logger.info("Swaps: " + helper.getSwaps());
+        logger.info("Copies: " + helper.getCopies());
+        logger.info("Array Hits: " + helper.getHits());
+
         sorter.close();
     }
 

@@ -65,6 +65,7 @@ public abstract class SortWithHelper<X> implements ProcessingSort<X> {
         try {
             helper.postProcess(xs);
         } catch (Exception e) {
+            // temporary change this to avoid exception on string sort
             logger.info(getDescription() + ": postProcess: exception: " + e.getLocalizedMessage());
         }
     }

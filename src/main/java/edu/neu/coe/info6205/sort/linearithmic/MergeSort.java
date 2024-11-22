@@ -64,6 +64,17 @@ public class MergeSort<X extends Comparable<X>> extends SortWithComparableHelper
         sort(a, aux, from, to);
     }
 
+    /**
+     * Copy arr X to destination when noCopyis true
+     * @param source source array
+     * @param destination des array
+     * @param from from position
+     * @param to to position
+     */
+    private void copySubarray(X[] source, X[] destination, int from, int to) {
+        helper.copyBlock(source, from, destination, from, to - from);
+    }
+
     private void sort(X[] a, X[] aux, int from, int to) {
         Config config = helper.getConfig();
         boolean insurance = config.getBoolean(MERGESORT, INSURANCE);
@@ -74,7 +85,26 @@ public class MergeSort<X extends Comparable<X>> extends SortWithComparableHelper
         }
 
         // TO BE IMPLEMENTED  : implement merge sort with insurance and no-copy optimizations
-throw new RuntimeException("implementation missing");
+        int mid = from + (to - from) / 2;
+        sort(a, aux, from, mid);
+        sort(a, aux, mid, to);
+
+//        X left_last = helper.get(a, mid-1);
+//        X right_first = helper.get(a, mid);
+        if (insurance && helper.less( a[mid-1], a[mid])) {
+            if (noCopy) {
+                copySubarray(aux, a, from, to);
+            } // copy like handler
+            return;
+        }
+
+        merge(a, aux, from, mid, to);
+
+        if(!noCopy) { // noCopy false
+            helper.copyBlock(aux, from, a, from, to - from);
+        }
+
+//throw new RuntimeException("implementation missing");
     }
 
     // CONSIDER combine with MergeSortBasic, perhaps.
